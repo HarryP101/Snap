@@ -10,20 +10,40 @@ import UIKit
 class ViewController: UIViewController {
 
     @IBOutlet weak var cardImage:UIImageView?
+    @IBOutlet weak var scoreLabel:UILabel?
     
-    var cardToDisplay: String = ""
+    var currentCard: String = ""
+    var previousCard: String = ""
     var deck: Deck?
+    
+    var score: Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
+        // Initialise deck and first card
         deck = Deck()
+        
+        let cardDrawn = deck?.drawCard()
+        guard let value = cardDrawn?.value else { return }
+        guard let type = cardDrawn?.type else { return }
+        
+        currentCard = String.getCardString(value: value, type: type)
+        updateCardImage()
+        updateScore()
     }
 
+    // Update the current card displayed using the card string
     func updateCardImage()
     {
-        cardImage?.image = UIImage(named: cardToDisplay)
+        cardImage?.image = UIImage(named: currentCard)
+    }
+    
+    // Update the current score
+    func updateScore()
+    {
+        scoreLabel?.text = String(score)
     }
     
     @IBAction func drawButtonPressed()
@@ -31,43 +51,29 @@ class ViewController: UIViewController {
         // Draw card from the deck
         let cardDrawn = deck?.drawCard()
         
-        // Create string from the card drawn
-        let value = cardDrawn?.value
-        let type = cardDrawn?.type
+        // Create string from the card drawn. If value and/or type are not set then exit the function early
+        guard let value = cardDrawn?.value else { return }
+        guard let type = cardDrawn?.type else { return }
         
-        var result = ""
+        // Set previous card from current card displayed
+        previousCard = currentCard;
         
-        if value ?? 0 > 10
-        {
-            switch value
-            {
-            case 11:
-                result += "J"
-            case 12:
-                result += "Q"
-            case 13:
-                result += "K"
-            case 14:
-                result += "A"
-            default:
-                result = ""
-            }
-        }
-        else
-        {
-            result += "\(value ?? 0)"
-        }
-        
-        result += "\(type ?? CardType.H)"
-        
-        cardToDisplay = result
-        
+        // Update the current card displayed
+        currentCard = String.getCardString(value: value, type: type)
         updateCardImage()
     }
     
     @IBAction func snapButtonPressed()
     {
-        // Check for matching card
+        if currentCard == previousCard
+        {
+            score += 1
+        }
+        else
+        {
+            score -= 1
+        }
+        updateScore()
     }
 }
 

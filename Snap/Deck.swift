@@ -22,6 +22,7 @@ class Deck
         }
     }
     
+    // Draw a card from the deck. Currently does not remove the card
     public func drawCard() -> Card
     {
         let index = Int.random(in: 0..<52)
