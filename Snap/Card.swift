@@ -7,6 +7,7 @@
 
 import Foundation
 
+// Enum for Diamonds, Hearts, Spades and Clubs
 enum CardType : CaseIterable
 {
     case D
