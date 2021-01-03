@@ -9,12 +9,18 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    @IBOutlet weak var cardImage:UIImageView?
+    @IBOutlet weak var playerCardImage:UIImageView?
+    @IBOutlet weak var computerCardImage:UIImageView?
     @IBOutlet weak var scoreLabel:UILabel?
     
-    var currentCardString: String = ""
-    var currentCardValue: Int = 0
-    var previousCardValue: Int = 0
+    var computerCurrentCardString: String = ""
+    var computerCurrentCardValue: Int = 0
+    
+    var playerCurrentCardString: String = ""
+    var playerCurrentCardValue: Int = 0
+    
+    var playerPile: PlayerPile = PlayerPile()
+    var computerPile: PlayerPile = PlayerPile()
     var deck: Deck = Deck()
     
     var score: Int = 0
@@ -23,13 +29,23 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
 
-        // Initialise first card
-        let cardDrawn = deck.drawCard()
-        guard let value = cardDrawn?.value else { return }
-        guard let type = cardDrawn?.type else { return }
+        // Initialise player and computer piles
+        for _ in 0..<26
+        {
+            guard let computerCard = deck.drawCard() else { return }
+            guard let playerCard = deck.drawCard() else { return }
+            computerPile.addCardsToPile(card: playerCard)
+            playerPile.addCardsToPile(card: computerCard)
+        }
+
+        // TODO: Sort out these optionals (??)
+        let firstPlayedCard = computerPile.playTopCard()
+        let value = firstPlayedCard?.value ?? 0
+        let type = firstPlayedCard?.type ?? CardType.H
         
-        currentCardValue = value
-        currentCardString = String.getCardString(value: value, type: type)
+        computerCurrentCardValue = value
+        
+        computerCurrentCardString = String.getCardString(value: value,type: type)
         updateCardImage()
         updateScore()
     }
@@ -37,7 +53,8 @@ class ViewController: UIViewController {
     // Update the current card displayed using the card string
     func updateCardImage()
     {
-        cardImage?.image = UIImage(named: currentCardString)
+        computerCardImage?.image = UIImage(named: computerCurrentCardString)
+        playerCardImage?.image = UIImage(named: playerCurrentCardString)
     }
     
     // Update the current score
@@ -50,32 +67,48 @@ class ViewController: UIViewController {
     @IBAction func drawButtonPressed()
     {
         // Draw card from the deck
-        if deck.isEmpty()
+        if playerPile.isEmpty() || computerPile.isEmpty()
         {
             finishGame()
         }
         else
         {
-            let cardDrawn = deck.drawCard()
+            // Player shows a card from there pile
+            let playerCardDrawn = playerPile.playTopCard()
             
             // Create string from the card drawn. If value and/or type are not set then exit the function early
-            guard let value = cardDrawn?.value else { return }
-            guard let type = cardDrawn?.type else { return }
-            
-            // Set previous card from current card displayed
-            previousCardValue = currentCardValue;
+            guard let pValue = playerCardDrawn?.value else { return }
+            guard let pType = playerCardDrawn?.type else { return }
             
             // Update the current card displayed
-            currentCardString = String.getCardString(value: value, type: type)
+            playerCurrentCardString = String.getCardString(value: pValue, type: pType)
+            
+            // Update the current value for player
+            playerCurrentCardValue = pValue
+            
+            // Now get computer to draw a card
+            let computerCardDrawn = computerPile.playTopCard()
+            
+            // Create string from the card drawn. If value and/or type are not set then exit the function early
+            guard let cValue = computerCardDrawn?.value else { return }
+            guard let cType = computerCardDrawn?.type else { return }
+            
+            // Update the current card displayed
+            computerCurrentCardString = String.getCardString(value: cValue, type: cType)
+            
+            // Update the current value for computer
+            computerCurrentCardValue = cValue
+            
             updateCardImage()
         }
     }
     
+    // TODO: keep track of cards played and add both stacks to the players pile if successful
     // Function executed when the snap button has been pressed
     @IBAction func snapButtonPressed()
     {
         // Increment score if value of the previous card is equal to the value of the current card
-        if currentCardValue == previousCardValue
+        if playerCurrentCardValue == computerCurrentCardValue
         {
             score += 1
         }
@@ -98,13 +131,24 @@ class ViewController: UIViewController {
         // Reset score and deck
         score = 0
         deck.reshuffle()
-        let cardDrawn = deck.drawCard()
-        guard let value = cardDrawn?.value else { return }
-        guard let type = cardDrawn?.type else { return }
         
-        currentCardValue = value
-        currentCardString = String.getCardString(value: value, type: type)
+        // Initialise player and computer piles
+        for _ in 0..<26
+        {
+            guard let computerCard = deck.drawCard() else { return }
+            guard let playerCard = deck.drawCard() else { return }
+            computerPile.addCardsToPile(card: playerCard)
+            playerPile.addCardsToPile(card: computerCard)
+        }
+
+        // TODO: Sort out these optionals (??)
+        let firstPlayedCard = computerPile.playTopCard()
+        let value = firstPlayedCard?.value ?? 0
+        let type = firstPlayedCard?.type ?? CardType.H
         
+        computerCurrentCardValue = value
+        
+        computerCurrentCardString = String.getCardString(value: value,type: type)
         updateCardImage()
         updateScore()
     }

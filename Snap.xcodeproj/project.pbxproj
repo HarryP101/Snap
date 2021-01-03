@@ -16,6 +16,7 @@
 		4A8E0E26259F5FA90064E418 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8E0E25259F5FA90064E418 /* Card.swift */; };
 		4A8E0E29259F64CF0064E418 /* Deck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8E0E28259F64CF0064E418 /* Deck.swift */; };
 		4A8E0E2C259F9A500064E418 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8E0E2B259F9A500064E418 /* String.swift */; };
+		4A8E0E3225A25A580064E418 /* PlayerPile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8E0E3125A25A580064E418 /* PlayerPile.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		4A8E0E25259F5FA90064E418 /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		4A8E0E28259F64CF0064E418 /* Deck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deck.swift; sourceTree = "<group>"; };
 		4A8E0E2B259F9A500064E418 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		4A8E0E3125A25A580064E418 /* PlayerPile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerPile.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +74,7 @@
 				4A8E0E25259F5FA90064E418 /* Card.swift */,
 				4A8E0E28259F64CF0064E418 /* Deck.swift */,
 				4A8E0E2B259F9A500064E418 /* String.swift */,
+				4A8E0E3125A25A580064E418 /* PlayerPile.swift */,
 			);
 			path = Snap;
 			sourceTree = "<group>";
@@ -152,6 +155,7 @@
 				4A8E0E29259F64CF0064E418 /* Deck.swift in Sources */,
 				4A8E0E12259F44900064E418 /* SceneDelegate.swift in Sources */,
 				4A8E0E26259F5FA90064E418 /* Card.swift in Sources */,
+				4A8E0E3225A25A580064E418 /* PlayerPile.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
