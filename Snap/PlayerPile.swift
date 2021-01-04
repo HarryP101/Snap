@@ -11,6 +11,7 @@ class PlayerPile
 {
     var cardsInPile: [Card] = []
     var nCardsInPile: Int = 0
+    var cardsPlayed: [Card] = []
     
     init()
     {
@@ -37,6 +38,8 @@ class PlayerPile
             let card = cardsInPile[index]
             cardsInPile.remove(at: index)
             nCardsInPile -= 1
+            
+            cardsPlayed.append(card)
             return card
         }
         else
@@ -48,5 +51,17 @@ class PlayerPile
     public func isEmpty() -> Bool
     {
         return cardsInPile.isEmpty
+    }
+    
+    // Clears the current array of played cards
+    public func clearPlayedCards()
+    {
+        cardsPlayed.removeAll()
+    }
+    
+    // Reshuffle the current players pile of cards
+    public func reshuffle()
+    {
+        cardsInPile.shuffle()
     }
 }
