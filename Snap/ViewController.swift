@@ -25,6 +25,9 @@ class ViewController: UIViewController {
     
     var score: Int = 0
     
+    // Declare timer for computer snap function
+    var timer: Timer?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -91,6 +94,11 @@ class ViewController: UIViewController {
             computerCurrentCardValue = cValue
             
             updateCardImage()
+            
+            if computerCurrentCardValue == playerCurrentCardValue
+            {
+                timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(computerSnap), userInfo: false, repeats: false)
+            }
         }
     }
     
@@ -112,6 +120,26 @@ class ViewController: UIViewController {
         {
             score -= 1
         }
+        
+        playerCurrentCardValue = -1
+        computerCurrentCardValue = 1
+        updateScore()
+        playerCardImage?.image = nil
+        computerCardImage?.image = nil
+    }
+    
+    // Snap function called for computer player when timer reaches zero
+    @objc func computerSnap()
+    {
+        timer?.invalidate()
+        timer = nil
+        score -= 1
+        computerPile.addCardsToPile(cards: computerPile.cardsPlayed)
+        computerPile.addCardsToPile(cards: playerPile.cardsPlayed)
+        
+        playerPile.clearPlayedCards()
+        computerPile.clearPlayedCards()
+        computerPile.reshuffle()
         
         playerCurrentCardValue = -1
         computerCurrentCardValue = 1
