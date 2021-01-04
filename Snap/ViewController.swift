@@ -37,15 +37,6 @@ class ViewController: UIViewController {
             computerPile.addCardsToPile(card: playerCard)
             playerPile.addCardsToPile(card: computerCard)
         }
-
-        // TODO: Sort out these optionals (??)
-        let firstPlayedCard = computerPile.playTopCard()
-        let value = firstPlayedCard?.value ?? 0
-        let type = firstPlayedCard?.type ?? CardType.H
-        
-        computerCurrentCardValue = value
-        
-        computerCurrentCardString = String.getCardString(value: value,type: type)
         updateCardImage()
         updateScore()
     }
@@ -103,7 +94,6 @@ class ViewController: UIViewController {
         }
     }
     
-    // TODO: keep track of cards played and add both stacks to the players pile if successful
     // Function executed when the snap button has been pressed
     @IBAction func snapButtonPressed()
     {
@@ -111,12 +101,23 @@ class ViewController: UIViewController {
         if playerCurrentCardValue == computerCurrentCardValue
         {
             score += 1
+            playerPile.addCardsToPile(cards: computerPile.cardsPlayed)
+            playerPile.addCardsToPile(cards: playerPile.cardsPlayed)
+            
+            computerPile.clearPlayedCards()
+            playerPile.clearPlayedCards()
+            playerPile.reshuffle()
         }
         else
         {
             score -= 1
         }
+        
+        playerCurrentCardValue = -1
+        computerCurrentCardValue = 1
         updateScore()
+        playerCardImage?.image = nil
+        computerCardImage?.image = nil
     }
     
     // Called when the deck has no more cards remaining
@@ -140,17 +141,9 @@ class ViewController: UIViewController {
             computerPile.addCardsToPile(card: playerCard)
             playerPile.addCardsToPile(card: computerCard)
         }
-
-        // TODO: Sort out these optionals (??)
-        let firstPlayedCard = computerPile.playTopCard()
-        let value = firstPlayedCard?.value ?? 0
-        let type = firstPlayedCard?.type ?? CardType.H
-        
-        computerCurrentCardValue = value
-        
-        computerCurrentCardString = String.getCardString(value: value,type: type)
-        updateCardImage()
         updateScore()
+        playerCardImage?.image = nil
+        computerCardImage?.image = nil
     }
 }
 
