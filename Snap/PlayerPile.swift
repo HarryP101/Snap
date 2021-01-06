@@ -53,15 +53,24 @@ class PlayerPile
         return cardsInPile.isEmpty
     }
     
-    // Clears the current array of played cards
-    public func clearPlayedCards()
-    {
-        cardsPlayed.removeAll()
-    }
     
     // Reshuffle the current players pile of cards
     public func reshuffle()
     {
         cardsInPile.shuffle()
+    }
+    
+    // Add players cards that they won to their own pile + plus their own that they played
+    public func wonSnap(cardsWon: [Card])
+    {
+        addCardsToPile(cards: cardsWon)
+        cardsInPile.append(contentsOf: cardsPlayed)
+        clearPlayedCards()
+    }
+    
+    // Clears the current array of played cards
+    private func clearPlayedCards()
+    {
+        cardsPlayed.removeAll()
     }
 }

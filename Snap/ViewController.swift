@@ -14,16 +14,17 @@ class ViewController: UIViewController {
     @IBOutlet weak var scoreLabel:UILabel?
     
     var computerCurrentCardString: String = ""
-    var computerCurrentCardValue: Int = 0
+    var computerCurrentCardValue: Int = 1
     
     var playerCurrentCardString: String = ""
-    var playerCurrentCardValue: Int = 0
+    var playerCurrentCardValue: Int = -1
     
-    var playerPile: PlayerPile = PlayerPile()
-    var computerPile: PlayerPile = PlayerPile()
+    var humanPlayerPile: PlayerPile = PlayerPile()
+    var computerPlayerPile: PlayerPile = PlayerPile()
     var deck: Deck = Deck()
     
     var score: Int = 0
+    var countdown: Int = 2000 // time in milliseconds
     
     // Declare timer for computer snap function
     var timer: Timer?
@@ -37,8 +38,8 @@ class ViewController: UIViewController {
         {
             guard let computerCard = deck.drawCard() else { return }
             guard let playerCard = deck.drawCard() else { return }
-            computerPile.addCardsToPile(card: playerCard)
-            playerPile.addCardsToPile(card: computerCard)
+            computerPlayerPile.addCardsToPile(card: playerCard)
+            humanPlayerPile.addCardsToPile(card: computerCard)
         }
         updateCardImage()
         updateScore()
@@ -60,15 +61,19 @@ class ViewController: UIViewController {
     // Function executed when the draw button has been pressed
     @IBAction func drawButtonPressed()
     {
+        // Don't do anything if player trys to draw when a SNAP is possible
+        guard computerCurrentCardValue != playerCurrentCardValue else { return }
+        
         // Draw card from the deck
-        if playerPile.isEmpty() || computerPile.isEmpty()
+        if humanPlayerPile.isEmpty() || computerPlayerPile.isEmpty()
         {
             finishGame()
         }
         else
         {
+            // TODO: Encapsulate this into a separate function which takes a PlayerPile as a parameter
             // Player shows a card from there pile
-            let playerCardDrawn = playerPile.playTopCard()
+            let playerCardDrawn = humanPlayerPile.playTopCard()
             
             // Create string from the card drawn. If value and/or type are not set then exit the function early
             guard let pValue = playerCardDrawn?.value else { return }
@@ -81,7 +86,7 @@ class ViewController: UIViewController {
             playerCurrentCardValue = pValue
             
             // Now get computer to draw a card
-            let computerCardDrawn = computerPile.playTopCard()
+            let computerCardDrawn = computerPlayerPile.playTopCard()
             
             // Create string from the card drawn. If value and/or type are not set then exit the function early
             guard let cValue = computerCardDrawn?.value else { return }
@@ -93,36 +98,49 @@ class ViewController: UIViewController {
             // Update the current value for computer
             computerCurrentCardValue = cValue
             
+            // Update the image of the cards drawn
             updateCardImage()
             
             if computerCurrentCardValue == playerCurrentCardValue
             {
-                timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(computerSnap), userInfo: false, repeats: false)
+                // Check timer hasn't already been started
+                guard timer == nil else { return }
+                timer = Timer.scheduledTimer(timeInterval: 0.001, target: self, selector: #selector(computerSnap), userInfo: false, repeats: true)
             }
         }
     }
     
+    // TODO Create a private function which takes a player as a parameter
     // Function executed when the snap button has been pressed
     @IBAction func snapButtonPressed()
     {
         // Increment score if value of the previous card is equal to the value of the current card
         if playerCurrentCardValue == computerCurrentCardValue
         {
+            // Increment score
             score += 1
-            playerPile.addCardsToPile(cards: computerPile.cardsPlayed)
-            playerPile.addCardsToPile(cards: playerPile.cardsPlayed)
             
-            computerPile.clearPlayedCards()
-            playerPile.clearPlayedCards()
-            playerPile.reshuffle()
+            // Add both player and computers cards to the players pile
+            humanPlayerPile.wonSnap(cardsWon: computerPlayerPile.cardsPlayed)
+            
+            // Reshuffle the players deck
+            humanPlayerPile.reshuffle()
+            
+            // Switch off the computers timer
+            timer?.invalidate()
+            timer = nil
         }
         else
         {
+            // User was wrong, so decrement their score
             score -= 1
         }
         
+        // Reset current card values so they are opposite (so player cannot repeatedly press SNAP)
         playerCurrentCardValue = -1
         computerCurrentCardValue = 1
+        
+        // Update score and set the images to nil
         updateScore()
         playerCardImage?.image = nil
         computerCardImage?.image = nil
@@ -131,21 +149,37 @@ class ViewController: UIViewController {
     // Snap function called for computer player when timer reaches zero
     @objc func computerSnap()
     {
-        timer?.invalidate()
-        timer = nil
-        score -= 1
-        computerPile.addCardsToPile(cards: computerPile.cardsPlayed)
-        computerPile.addCardsToPile(cards: playerPile.cardsPlayed)
+        // Decrement the countdown by 1. Timer is set to repeat every 1 ms
+        countdown -= 1
         
-        playerPile.clearPlayedCards()
-        computerPile.clearPlayedCards()
-        computerPile.reshuffle()
-        
-        playerCurrentCardValue = -1
-        computerCurrentCardValue = 1
-        updateScore()
-        playerCardImage?.image = nil
-        computerCardImage?.image = nil
+        // When the countdown reaches zero, ~2 seconds has passed
+        if countdown == 0
+        {
+            // Switch off the computer timer
+            timer?.invalidate()
+            timer = nil
+            
+            // Decrement the players score by 1
+            score -= 1
+            
+            // Add player and computers played cards to the computers pile
+            computerPlayerPile.wonSnap(cardsWon: computerPlayerPile.cardsPlayed)
+            
+            // Reshuffle the computers pile
+            computerPlayerPile.reshuffle()
+            
+            // Set the card values to opposite values
+            playerCurrentCardValue = -1
+            computerCurrentCardValue = 1
+            
+            // Update score and set both images to nil
+            updateScore()
+            playerCardImage?.image = nil
+            computerCardImage?.image = nil
+            
+            // Reset countdown back to 2 seconds
+            countdown = 2000
+        }
     }
     
     // Called when the deck has no more cards remaining
@@ -166,8 +200,8 @@ class ViewController: UIViewController {
         {
             guard let computerCard = deck.drawCard() else { return }
             guard let playerCard = deck.drawCard() else { return }
-            computerPile.addCardsToPile(card: playerCard)
-            playerPile.addCardsToPile(card: computerCard)
+            computerPlayerPile.addCardsToPile(card: playerCard)
+            humanPlayerPile.addCardsToPile(card: computerCard)
         }
         updateScore()
         playerCardImage?.image = nil
