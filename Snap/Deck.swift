@@ -26,7 +26,7 @@ class Deck
     }
     
     // Draw a random card from the deck. Returns nil if no cards are left in the deck
-    public func drawCard() -> Card?
+    func drawCard() -> Card?
     {
         if nCardsInDeck > 0
         {
@@ -43,13 +43,13 @@ class Deck
     }
     
     // Check whether the deck is empty
-    public func isEmpty() -> Bool
+    func isEmpty() -> Bool
     {
         return cardsInDeck.isEmpty
     }
     
     // Reshuffle 52 cards into the deck
-    public func reshuffle()
+    func reshuffle()
     {
         cardsInDeck.removeAll()
         nCardsInDeck = 52

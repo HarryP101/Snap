@@ -18,19 +18,19 @@ class PlayerPile
         
     }
     
-    public func addCardsToPile(card: Card)
+    func addCardsToPile(card: Card)
     {
         cardsInPile.append(card)
         nCardsInPile += 1
     }
     
-    public func addCardsToPile(cards: [Card])
+    func addCardsToPile(cards: [Card])
     {
         cardsInPile.append(contentsOf: cards)
         nCardsInPile += cards.count
     }
     
-    public func playTopCard() -> Card?
+    func playTopCard() -> Card?
     {
         if nCardsInPile > 0
         {
@@ -48,23 +48,23 @@ class PlayerPile
         }
     }
     
-    public func isEmpty() -> Bool
+    func isEmpty() -> Bool
     {
         return cardsInPile.isEmpty
     }
     
     
     // Reshuffle the current players pile of cards
-    public func reshuffle()
+    func reshuffle()
     {
         cardsInPile.shuffle()
     }
     
     // Add players cards that they won to their own pile + plus their own that they played
-    public func wonSnap(cardsWon: [Card])
+    func wonSnap(cardsWon: [Card])
     {
-        addCardsToPile(cards: cardsWon)
-        cardsInPile.append(contentsOf: cardsPlayed)
+        let totalCardsWon = cardsWon + cardsPlayed
+        addCardsToPile(cards: totalCardsWon)
         clearPlayedCards()
     }
     
